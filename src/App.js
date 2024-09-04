@@ -30,7 +30,7 @@ const SnapURL = () => {
       const data = await response.json();
       if (response.ok) {
         setShortUrl(data.id);
-        setIsShortened(true); // Set to true when URL is successfully shortened
+        setIsShortened(true);
       } else {
         console.error("Error shortening the URL:", data.error);
         toast.current.show({
@@ -39,7 +39,7 @@ const SnapURL = () => {
           detail: data.error || "An error occurred while shortening the URL",
           life: 5000,
         });
-        setShortUrl(""); // Clear the previous short URL in case of error
+        setShortUrl("");
       }
     } catch (error) {
       console.error("Error shortening the URL:", error);
@@ -49,7 +49,7 @@ const SnapURL = () => {
         detail: "An error occurred while shortening the URL",
         life: 5000,
       });
-      setShortUrl(""); // Clear the previous short URL in case of error
+      setShortUrl("");
     } finally {
       setIsSubmitting(false);
     }
@@ -59,25 +59,70 @@ const SnapURL = () => {
     setLongUrl("");
     setAlias("");
     setShortUrl("");
-    setIsShortened(false); // Reset to false to show the form again
+    setIsShortened(false);
   };
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(
-      `https://snap-url-shortener.vercel.app/${shortUrl}`
-    );
-    toast.current.show({
-      severity: "success",
-      summary: "Copied",
-      detail: "URL copied to clipboard",
-      life: 3000,
-    });
+    const urlToCopy = `https://snap-url-shortener.vercel.app/${shortUrl}`;
+
+    if (navigator.clipboard) {
+      // Modern Clipboard API
+      navigator.clipboard
+        .writeText(urlToCopy)
+        .then(() => {
+          toast.current.show({
+            severity: "success",
+            summary: "Copied",
+            detail: "URL copied to clipboard",
+            life: 3000,
+          });
+        })
+        .catch((error) => {
+          console.error("Error copying to clipboard:", error);
+          toast.current.show({
+            severity: "error",
+            summary: "Copy Failed",
+            detail: "Failed to copy URL to clipboard",
+            life: 3000,
+          });
+        });
+    } else {
+      // Fallback for older browsers
+      const textarea = document.createElement("textarea");
+      textarea.value = urlToCopy;
+      document.body.appendChild(textarea);
+      textarea.select();
+
+      try {
+        const successful = document.execCommand("copy");
+        if (successful) {
+          toast.current.show({
+            severity: "success",
+            summary: "Copied",
+            detail: "URL copied to clipboard",
+            life: 3000,
+          });
+        } else {
+          throw new Error("Failed to copy");
+        }
+      } catch (error) {
+        console.error("Error copying to clipboard:", error);
+        toast.current.show({
+          severity: "error",
+          summary: "Copy Failed",
+          detail: "Failed to copy URL to clipboard",
+          life: 3000,
+        });
+      }
+
+      document.body.removeChild(textarea);
+    }
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <Toast ref={toast} />
-      <div className="w-full max-w-xl p-8 space-y-6 bg-white rounded-lg shadow-lg">
+      <div className="w-4/3 max-w-xl p-8 space-y-6 bg-white rounded-lg shadow-lg">
         <h1 className="text-2xl font-bold text-center text-gray-800">
           SnapURL
         </h1>
