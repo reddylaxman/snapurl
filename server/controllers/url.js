@@ -41,7 +41,6 @@ const generateNewShortURL = async (req, res) => {
 
     return res.status(201).json({
       id: shortID,
-
       message: "Shortened URL is generated successfully.",
     });
   } catch (error) {
@@ -66,8 +65,7 @@ const generateNewCustomURL = async (req, res) => {
 
     if (!aliasRegex.test(body.alias)) {
       return res.status(400).json({
-        error:
-          "Invalid alias. Alias must be at least 8 characters long, alphanumeric, and contain both uppercase and lowercase letters.",
+        error: "Invalid alias. ",
       });
     }
 
