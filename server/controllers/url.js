@@ -122,10 +122,16 @@ const generateNewCustomURL = async (req, res) => {
 };
 
 const redirectToURL = async (req, res) => {
-  const id = req.params.id;
+  let id = req.params.id;
 
   try {
-    // Find the URL entry by either shortId or alias
+    if (id.includes("+")) {
+      id = id.replace(/\+/g, "");
+      return res
+        .status(200)
+        .redirect(`http://localhost:3000/snapurl/preview/${id}`);
+    }
+
     const entry = await URL.findOne({
       $or: [{ shortId: id }, { alias: id }],
     });
@@ -134,7 +140,6 @@ const redirectToURL = async (req, res) => {
       return res.status(404).json({ error: "URL not found." });
     }
 
-    // Update visit history for the found entry
     await URL.findOneAndUpdate(
       { _id: entry._id },
       {
@@ -147,7 +152,6 @@ const redirectToURL = async (req, res) => {
       { new: true }
     );
 
-    // Redirect to the URL
     res.status(200).redirect(entry.redirectURL);
   } catch (error) {
     console.error("Error:", error.message);
@@ -158,15 +162,13 @@ const redirectToURL = async (req, res) => {
 };
 
 const getAnalytics = async (req, res) => {
-  const id = req.params.id; // Single parameter `id` for both shortId and alias
+  const id = req.params.id;
 
   try {
-    // Build query to check both shortId and alias fields
     const query = {
       $or: [{ shortId: id }, { alias: id }],
     };
 
-    // Find the URL entry
     const result = await URL.findOne(query);
 
     if (!result) {
@@ -185,9 +187,35 @@ const getAnalytics = async (req, res) => {
   }
 };
 
+const getPreview = async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    const query = {
+      $or: [{ shortId: id }, { alias: id }],
+    };
+
+    const result = await URL.findOne(query);
+
+    if (!result) {
+      return res.status(404).json({ error: "URL not found." });
+    }
+
+    return res.status(200).json({
+      redirectURL: result.redirectURL,
+    });
+  } catch (error) {
+    console.error("Error:", error.message);
+    res
+      .status(500)
+      .json({ error: "An error occurred while processing your request." });
+  }
+};
+
 export default {
   generateNewShortURL,
   redirectToURL,
   getAnalytics,
   generateNewCustomURL,
+  getPreview,
 };
