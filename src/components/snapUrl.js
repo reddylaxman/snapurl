@@ -63,7 +63,7 @@ const SnapURL = () => {
   };
 
   const handleCopy = () => {
-    const urlToCopy = `https://snap-url-shortener.vercel.app/${shortUrl}`;
+    const urlToCopy = `${process.env.REACT_APP_SHORTEN_URL}${shortUrl}`;
 
     if (navigator.clipboard) {
       navigator.clipboard

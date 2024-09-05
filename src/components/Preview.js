@@ -44,7 +44,7 @@ const UrlPreview = () => {
   return (
     <div className="bg-gray-100 min-h-screen flex flex-col">
       {/* Navbar */}
-      <nav className="bg-gradient-to-r from-slate-950  via-blue-500  to-red-600 text-white p-4 flex justify-between items-center">
+      <nav className="bg-gradient-to-r from-slate-950 via-blue-500 to-red-600 text-white p-4 flex justify-between items-center">
         <h1 className="text-xl font-semibold">SnapURL</h1>
         <Link
           to="/"
@@ -56,7 +56,7 @@ const UrlPreview = () => {
 
       {/* Main Content */}
       <div className="flex justify-center items-center flex-grow p-4">
-        <div className="border p-6 rounded-lg shadow-md bg-white max-w-full sm:max-w-md w-full">
+        <div className="border p-8 rounded-lg shadow-lg bg-white max-w-full sm:max-w-2xl w-full">
           {urlDetails ? (
             <>
               <div className="mb-4">
@@ -72,11 +72,10 @@ const UrlPreview = () => {
                   <strong>Shortened URL:</strong>
                 </p>
                 <a
-                  href={`http://localhost:3000/snapurl/${id}`}
+                  href={`${process.env.REACT_APP_SHORTEN_URL}${id}`}
                   className="text-blue-500 hover:underline text-lg"
                 >
-                  {process.env.REACT_APP_SHORTEN_URL}
-                  {id}
+                  {`${process.env.REACT_APP_SHORTEN_URL}${id}`}
                 </a>
               </div>
             </>
