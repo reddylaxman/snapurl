@@ -1,6 +1,7 @@
 import { nanoid } from "nanoid";
 import URL from "../models/url.js";
-
+import dotenv from "dotenv";
+dotenv.config();
 const aliasRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
 const generateNewShortURL = async (req, res) => {
@@ -127,6 +128,7 @@ const redirectToURL = async (req, res) => {
   try {
     if (id.includes("+")) {
       id = id.replace(/\+/g, "");
+
       return res
         .status(200)
         .redirect(`${process.env.snap_url_VERCEL}preview/${id}`);
