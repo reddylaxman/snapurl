@@ -129,7 +129,7 @@ const redirectToURL = async (req, res) => {
       id = id.replace(/\+/g, "");
       return res
         .status(200)
-        .redirect(`http://localhost:3000/snapurl/preview/${id}`);
+        .redirect(`${process.env.snap_url_VERCEL}preview/${id}`);
     }
 
     const entry = await URL.findOne({
