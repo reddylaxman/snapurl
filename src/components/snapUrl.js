@@ -1,6 +1,11 @@
 import React, { useRef, useState } from "react";
 import { FaCopy, FaQrcode, FaExternalLinkAlt } from "react-icons/fa";
 import { Toast } from "primereact/toast";
+import { Dialog } from "primereact/dialog";
+import { Button } from "primereact/button";
+import { QRCodeCanvas } from "qrcode.react";
+import logo from "../images/logo.png";
+import PasswordChecklist from "react-password-checklist";
 
 const SnapURL = () => {
   const [longUrl, setLongUrl] = useState("");
@@ -8,6 +13,8 @@ const SnapURL = () => {
   const [shortUrl, setShortUrl] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isShortened, setIsShortened] = useState(false);
+  const [isAliasFocused, setIsAliasFocused] = useState(false);
+  const [displayQRCodeDialog, setDisplayQRCodeDialog] = useState(false);
   const toast = useRef(null);
 
   const handleSubmit = async (e) => {
@@ -60,6 +67,7 @@ const SnapURL = () => {
     setAlias("");
     setShortUrl("");
     setIsShortened(false);
+    setIsAliasFocused(false);
   };
 
   const handleCopy = () => {
@@ -117,17 +125,29 @@ const SnapURL = () => {
     }
   };
 
+  const handleQRCodeDownload = () => {
+    const canvas = document.querySelector("canvas");
+    if (canvas) {
+      const url = canvas.toDataURL("image/png");
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "qrcode.png";
+      link.click();
+    }
+  };
+
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4 sm:px-6 lg:px-8">
       <Toast ref={toast} />
-      <div className="w-4/3 max-w-xl p-8 space-y-6 bg-white rounded-lg shadow-lg">
-        <h1 className="text-2xl font-bold text-center text-gray-800">
-          SnapURL
-        </h1>
+      <div className="w-full max-w-lg p-6 bg-white rounded-lg shadow-lg">
+        <div className="flex justify-center mb-6">
+          <img src={logo} alt="SnapURL" className="w-64 h-32" />
+        </div>
+
         {!isShortened ? (
           <form className="space-y-4" onSubmit={handleSubmit}>
-            <div className="flex flex-col sm:flex-row sm:space-x-4 ml-4">
-              <div className="flex-4">
+            <div className="flex flex-col sm:flex-row sm:space-x-4">
+              <div className="flex-1">
                 <label
                   htmlFor="longUrl"
                   className="block text-sm font-medium text-gray-700"
@@ -145,7 +165,7 @@ const SnapURL = () => {
                 />
               </div>
 
-              <div className="flex-2 mt-4 sm:mt-0">
+              <div className="flex-1 mt-4 sm:mt-0">
                 <label
                   htmlFor="alias"
                   className="block text-sm font-medium text-gray-700"
@@ -158,10 +178,24 @@ const SnapURL = () => {
                   className="block w-full px-4 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   value={alias}
                   onChange={(e) => setAlias(e.target.value)}
+                  onFocus={() => setIsAliasFocused(true)}
+                  onBlur={() => setIsAliasFocused(false)}
                   placeholder="Enter custom alias"
                 />
               </div>
             </div>
+            {(isAliasFocused || alias) && (
+              <div className="mt-2">
+                <PasswordChecklist
+                  rules={["minLength", "number", "capital"]}
+                  minLength={8}
+                  value={alias}
+                  onChange={() => {}}
+                  className="text-sm text-gray-700"
+                />
+              </div>
+            )}
+
             <button
               type="submit"
               className="w-full px-4 py-2 font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
@@ -194,7 +228,7 @@ const SnapURL = () => {
                 value={`https://snap-url-shortener.vercel.app/${shortUrl}`}
               />
             </div>
-            <div className="flex items-center justify-between space-x-2">
+            <div className="flex flex-col sm:flex-row sm:space-x-2">
               <button
                 onClick={() =>
                   window.open(
@@ -202,32 +236,55 @@ const SnapURL = () => {
                     "_blank"
                   )
                 }
-                className="flex items-center justify-center w-3/4 px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600"
+                className="flex items-center justify-center w-full sm:w-1/3 px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600"
               >
                 <FaExternalLinkAlt />
                 <span className="ml-2">Visit URL</span>
               </button>
-              <button className="flex items-center justify-center w-1/4 px-4 py-2 text-white bg-teal-500 rounded-md hover:bg-teal-600">
+              <button
+                onClick={() => setDisplayQRCodeDialog(true)}
+                className="flex items-center justify-center w-full sm:w-1/3 mt-2 sm:mt-0 px-4 py-2 text-white bg-teal-500 rounded-md hover:bg-teal-600"
+              >
                 <FaQrcode />
-                <span className="ml-2">QR</span>
+                <span className="ml-2">QR Code</span>
               </button>
-
               <button
                 onClick={handleCopy}
-                className="flex items-center justify-center w-1/4 px-4 py-2 text-white bg-green-500 rounded-md hover:bg-green-600"
+                className="flex items-center justify-center w-full sm:w-1/3 mt-2 sm:mt-0 px-4 py-2 text-white bg-green-500 rounded-md hover:bg-green-600"
               >
                 <FaCopy />
-                <span className="ml-2">Copy</span>
+                <span className="ml-2">Copy URL</span>
               </button>
             </div>
             <button
               onClick={handleReset}
-              className="w-full px-4 py-2 mt-4 font-semibold text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+              className="w-full px-4 py-2 mt-4 text-white bg-gray-500 rounded-md hover:bg-gray-600"
             >
               Shorten Another URL
             </button>
           </div>
         )}
+
+        <Dialog
+          header="QR Code"
+          visible={displayQRCodeDialog}
+          onHide={() => setDisplayQRCodeDialog(false)}
+          footer={
+            <Button
+              label="Download"
+              icon="pi pi-download"
+              onClick={handleQRCodeDownload}
+            />
+          }
+          style={{ width: "30vw" }}
+          breakpoints={{ "960px": "75vw", "640px": "60vw" }}
+        >
+          <div className="flex items-center justify-center">
+            <QRCodeCanvas
+              value={`https://snap-url-shortener.vercel.app/${shortUrl}`}
+            />
+          </div>
+        </Dialog>
       </div>
     </div>
   );

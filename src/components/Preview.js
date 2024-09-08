@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import title from "../images/title.png";
 
 const UrlPreview = () => {
   const { id } = useParams();
@@ -44,13 +45,17 @@ const UrlPreview = () => {
   return (
     <div className="bg-gray-100 min-h-screen flex flex-col">
       {/* Navbar */}
-      <nav className="bg-gradient-to-r from-slate-950 via-blue-500 to-red-600 text-white p-4 flex justify-between items-center">
-        <h1 className="text-xl font-semibold">SnapURL</h1>
+      <nav className="bg-zinc-950 text-white p-4 flex justify-between items-center h-20">
+        <img
+          src={title}
+          alt="SnapURL - text-2xl font-bold text-center text-gray-800"
+          className="w-30 h-[3rem]"
+        />
         <Link
           to="/"
-          className="bg-white text-blue-500 px-4 py-2 rounded-lg hover:bg-gray-200 flex items-center"
+          className="bg-gradient-to-r from-blue-500 via-black to-red-500 text-white px-4 py-2 rounded-lg hover:from-red-600 hover:via-black hover:to-blue-600 flex items-center"
         >
-          Visit Home page
+          Visit Home Page
         </Link>
       </nav>
 
