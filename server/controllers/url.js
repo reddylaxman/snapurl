@@ -91,7 +91,7 @@ const generateNewCustomURL = async (req, res) => {
         await existingUrl.save();
         return res.status(200).json({
           id: existingUrl.alias,
-          message: "URL shortened  alias.",
+          message: "Custom shortened URL is generated successfully.",
         });
       }
 

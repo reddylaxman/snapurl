@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const urlSchema = new mongoose.Schema(
   {
     shortId: { type: String, unique: true },
-    alias: { type: String, unique: false },
+    alias: { type: String, sparse: true },
     redirectURL: { type: String, required: true },
     visitHistory: [{ timestamp: { type: Number } }],
   },
