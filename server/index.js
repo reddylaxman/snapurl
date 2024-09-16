@@ -26,6 +26,7 @@ const snapURL = async () => {
     console.log("Connection failed");
   }
 };
+
 snapURL();
 app.use("/", urlRoute);
 app.get("/", (req, res) => {

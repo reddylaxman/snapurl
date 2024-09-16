@@ -16,11 +16,10 @@ const generateNewShortURL = async (req, res) => {
 
     if (existingUrl) {
       if (!existingUrl.shortId) {
-        const newShortId = nanoid(8);
-        existingUrl.shortId = newShortId;
+        existingUrl.shortId = nanoid(8);
         await existingUrl.save();
         return res.status(200).json({
-          id: newShortId,
+          id: existingUrl.shortId,
           alias: existingUrl.alias || null,
           message: "Shortened URL generated successfully.",
         });
@@ -91,7 +90,7 @@ const generateNewCustomURL = async (req, res) => {
         await existingUrl.save();
         return res.status(200).json({
           id: existingUrl.alias,
-          message: "URL updated with new alias.",
+          message: "Custom shortened URL is generated successfully.",
         });
       }
 
