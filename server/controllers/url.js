@@ -37,6 +37,7 @@ const generateNewShortURL = async (req, res) => {
       shortId: shortID,
       redirectURL: body.url,
       visitHistory: [],
+      alias: null,
     });
 
     return res.status(201).json({
@@ -90,14 +91,14 @@ const generateNewCustomURL = async (req, res) => {
         await existingUrl.save();
         return res.status(200).json({
           id: existingUrl.alias,
-          message: "Custom shortened URL is generated successfully.",
+          message: "URL shortened  alias.",
         });
       }
 
       if (existingUrl.alias === body.alias) {
         return res.status(200).json({
           id: existingUrl.alias,
-          message: "URL already has the provided alias.",
+          message: "Custom shortened URL is generated successfully.",
         });
       }
     }

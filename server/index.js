@@ -21,6 +21,7 @@ app.use(
 const snapURL = async () => {
   try {
     await mongoose.connect(process.env.snap_url_MONGODB_URL);
+
     console.log("Connect to MongoDB successfully");
   } catch (error) {
     console.log("Connection failed");
